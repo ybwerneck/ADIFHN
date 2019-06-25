@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1548782186 source:/home/luisa/Difusao_artigo2/main.cpp
+	<iostream>
+	<math.h>
+	<string.h>
+	<vector>
+	<iomanip>
+	<cmath>
+
+1552926432 source:/home/luisaribeiro/Documentos/Difusao_artigo2/main.cpp
+	<iostream>
+	<math.h>
+	<string.h>
+	<vector>
+	<iomanip>
+	<cmath>
+
+1556120671 source:/home/luisaribeiro/Documentos/Difusao_artigo2_17_04/Difusao_artigo2/main.cpp
+	<iostream>
+	<math.h>
+	<string.h>
+	<vector>
+	<iomanip>
+	<cmath>
+
+1559738151 source:/home/yan/Downloads/Difusao_artigo2_24_04/Difusao_artigo2/main.cpp
+	<iostream>
+	<math.h>
+	<string.h>
+	<vector>
+	<iomanip>
+	<cmath>
+
