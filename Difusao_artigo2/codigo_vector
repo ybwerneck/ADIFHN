@@ -1,0 +1,135 @@
+#include <iostream>
+#include <math.h>
+#include <string.h>
+#include <vector>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+// Printing vectors
+void print_vector(vector<double> & v)
+{
+    cout<<endl;
+    for(int i=0; i<v.size(); i++)
+    {
+        cout << v[i] << endl;
+    }
+    cout<<endl;
+}
+// Solving tridiagonal matrices
+vector<double> tridiagonal_solver(vector<double> & a, vector<double> & b, vector<double> & c, vector<double> & f)
+{
+
+    int n = f.size();
+    vector<double> x(n);
+
+    for(int i=1; i<n; i++)
+    {
+
+        double m = a[i-1]/b[i-1];
+        b[i] -= m*c[i-1];
+        f[i] -= m*f[i-1];
+    }
+    // solve for last x value
+    x[n-1] = f[n-1]/b[n-1];
+
+    // solve for remaining x values by back substitution
+    for(int i=n-2; i >= 0; i--)
+        x[i] = (f[i]- c[i]*x[i+1])/b[i];
+
+         print_vector(x);
+    return x;
+
+}
+double CondicaoInicial(double x)
+{
+    return 0.05*exp((-5)*pow(x,2));
+}
+int main()
+{
+    FILE *arquivo;
+    double d, dx, dt, alfa, aux;
+    int n, j;
+    arquivo= fopen("arquivos/Teste.txt","w");
+    if(arquivo)
+    {
+        d=1.0;
+        dx=0.02;
+        dt=0.05;
+        cout<<"dx= "<<dx<<endl;
+        cout<<"dt= "<<dt<<endl;
+        j= (int)(1.0/dx); //números de pontos em x
+        n= (int)(40.0/dt); //números de pontos em t
+        cout<<"j= "<<j<<endl;
+        cout<<"n= "<<n<<endl;
+        vector<double> a, b, c, f;
+        alfa= (d*dt)/pow(dx,2);
+        vector<double> u_novo, u_antigo;
+        for(int i=1; i<j; i++)
+        {
+            b.push_back(1+(2*alfa));
+        }
+        for(int i=1; i<j-1; i++)
+        {
+            a.push_back(-alfa);
+        }
+        for(int i=1; i<j-1; i++)
+        {
+            c.push_back(-alfa);
+        }
+        //c[1]=(-2)*alfa;
+        //a[j-3]=(-2)*alfa;
+        for(int x=0; x<=j; x++)
+        {
+            u_antigo.push_back(CondicaoInicial(x*dx));
+            fprintf(arquivo, "%f ", u_antigo[x]);
+            fprintf(arquivo, "\n");
+        }
+        for(int t=0; t<=n; t++)//for no tempo
+        {
+            cout<<t<<endl;
+            vector<double> u_aux;
+            for (int x=0; x<=j; x++) //for no espaço
+            {
+                cout<< "iteracao x: "<< x<< "iteracao t: " << t<<endl;
+                aux=u_antigo[x]+(dt*u_antigo[x]-pow(u_antigo[x],2));
+                cout<<aux<<endl;
+                u_aux.push_back(aux);
+                //print_vector(u_aux);
+            }
+            u_novo = tridiagonal_solver(a, b, c, u_aux);
+            //print_vector(u_novo);
+            char filename2[100];
+            FILE *file2;
+            sprintf(filename2, "arquivos/u-%02d.txt", t);
+            file2 = fopen(filename2, "w");
+            for (int x=0; x<=j; x++) //for no espaço
+            {
+                double u2=0.05*exp((-5)*pow((x*dx),2));
+                fprintf(file2, "%f ", u2);
+                fprintf(file2, "\n");
+            }
+            fclose(file2);
+
+            //condição de contorno Neumann
+            u_novo[0]=u_novo[1];
+            u_novo[j]=u_novo[j-1];
+
+            u_antigo=u_novo;
+
+            char filename[100];
+            FILE *file;
+            sprintf(filename, "arquivos/Teste-%02d.txt", t);
+            file = fopen(filename, "w");
+            for (int x=0; x<=j; x++) //for no espaço
+            {
+                fprintf(file, "%f ", u_novo[x]);
+                fprintf(file, "\n");
+
+            }
+            fclose(file);
+        }
+        fclose(arquivo);
+    }
+    return 0;
+}
+

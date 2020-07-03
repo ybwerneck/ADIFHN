@@ -1,0 +1,12 @@
+﻿  adifhn.cpp
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(35,19): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(66,12): warning C4101: 'j': variável local não referenciada
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(111,16): warning C4244: 'return': conversão de 'double' para 'float', possível perda de dados
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(150,12): warning C4101: 'j': variável local não referenciada
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(150,9): warning C4101: 'i': variável local não referenciada
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(191,11): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(193,12): warning C4129: ' ': sequência de escape de caractere não reconhecida
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(242,13): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(248,18): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\recuperado\adifhn.cpp(297,17): warning C4101: 'i': variável local não referenciada
+  calcerro.vcxproj -> C:\Users\yanbw\Documents\recuperado\x64\Debug\calcerro.exe
