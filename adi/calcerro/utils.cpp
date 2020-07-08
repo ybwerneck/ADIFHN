@@ -5,7 +5,7 @@
 #include <string>
 #include <thread>         // std::thread
 #include "utils.h"
-#define n 10
+#define n 8
 
 void joinAll(std::thread* array, int tam) {
 
@@ -52,20 +52,6 @@ void dump_matrix(double** u, int tamx, int tamy)
     }
 }
 
-void copyMatrix(double** origem, double** destino, int tamx, int tamy)
-{
-    int i, j;
-    for (i = 0; i < tamx; i++)
-    {
-        for (j = 0; j < tamy; j++)
-        {
-            destino[i][j] = origem[i][j];
-
-        }
-    }
-
-}
-
 void copyMatrixe(double** origem, double** destino, int bgx, int tamx, int tamy)
 {
     int i, j;
@@ -79,6 +65,20 @@ void copyMatrixe(double** origem, double** destino, int bgx, int tamx, int tamy)
 
         }
     }
+
+}
+
+
+void copyMatrix(double** origem, double** destino, int tamx, int tamy)
+{
+	const int nt = n;
+	std::thread array[nt];
+    int i;
+	for (i = 0; i < n; i++)
+	{
+		array[i] = std::thread(copyMatrixe, origem, destino, i, tamx, tamy);
+	}
+	joinAll(array, nt);
 
 }
 
@@ -137,9 +137,11 @@ void flipmatrixt(double** u, int tamx, int tamy)
     delete[] L;
 }
 
+
+
 void flipmatrixa(double** u, int tamx, int tamy)
 {
-    const int nt = 10;
+    const int nt = n;
     std::thread array[nt];
     int i, j;
     double** L = (double**)calloc(sizeof(double*), tamx);

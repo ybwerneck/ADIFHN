@@ -24,6 +24,9 @@
     <ClCompile Include="utils.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="display.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adifhn.h">
@@ -32,5 +35,11 @@
     <ClInclude Include="utils.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="display.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Texto.txt" />
   </ItemGroup>
 </Project>

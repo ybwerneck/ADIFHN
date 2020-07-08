@@ -1,0 +1,6 @@
+
+set size square 1,1
+set pm3d map
+splot 'result_z10.txt'  u 2:3:1 palette with image
+
+

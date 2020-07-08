@@ -106,28 +106,32 @@ float Iapp(double x, double y, double t, double V)
     {
         return  1;
     }
-
     else
         return V;
 
 }
-double calcularFX(double** U, double g, int x, int y)
+double calcularFX(double U, double UXM1, double UXP1,double g, int x, int y)
 
 {
 
     if (x != 0 && x != tam - 1)
-        return U[x][y] * (1 - 2 * Y) + Y * U[x + 1][y] + Y * U[x - 1][y] + R(U[x][y], g) * dt;
+        return U * (1 - 2 * Y) + Y * UXP1 + Y *UXM1 + R(U, g) * dt;
     else if (x == 0)
-        return U[x][y] * (1 - Y) + Y * U[x + 1][y] + R(U[x][y], g) * dt;
+        return U * (1 - Y) + Y * UXP1 + R(U, g) * dt;
 
-    else return U[x][y] * (1 - Y) + Y * U[x - 1][y] + R((U[x][y]), g) * dt;
+    else return U * (1 - Y) + Y * UXM1 + R((U), g) * dt;
 
 }
-void getVetorFx(double** U, double** g, int x)
+double* getVetorFx(double **Ua, double** g, int x)
 {
+      
+    double* U =(double*) calloc(sizeof(double), tam);
     int i;
-    for (i = 0; i < tam; i++)
-        U[x][i] = calcularFX(U, g[x][i], x, i);
+    for (i = 0; i < tam; i++) {
+        double UX=Ua[x][i],UXM1= (x!=0)?Ua[x - 1][i]:0,UXP1=(x!=tam-1)?Ua[x + 1][i]:8;
+        U[i] = calcularFX(UX,UXM1,UXP1, g[x][i], x, i);
+    }
+    return U;
 }
 void updateG(double** g,double** V,int n, int bgx, int tamx, int tamy)
 {
@@ -148,7 +152,7 @@ void updateG(double** g,double** V,int n, int bgx, int tamx, int tamy)
 void updateGt(double** V, double** g, int tam)
 {
     int i, j;
-    const int n = 10;
+    const int n = 8;
     std::thread array[n];
        for (int i = 0; i < n; i++)
         {
@@ -190,28 +194,42 @@ void print(int n, int k,double kt,bool report) {
 
     int o = kt == -1 ? k : (kt)/dt;
     system("cls");
-    printf("DT: %.10f DX:%.10f TAM= %d \n Qua2dro %d \ %d   completed %f", dt, dx, tam,n,o, ((double)n /(o)) * 100);   
+    printf("DT: %.10f DX:%.10f TAM= %d \n Quadro %d \ %d   completed %f", dt, dx, tam,n,o, ((double)n /(o)) * 100);   
 
 }
 }
 
-void calc (double** u,int beg,int n,int tam,double** rhs,double** g) {
+void calc (double** u,double** ua,int beg,int n,int tam,double** rhs,double** g) {
+    
     for (int i = beg; i < tam; i+=n)
     {
-        getVetorFx(u, g, i);
+        u[i]=getVetorFx(ua, g, i);
         solve_tridiagonal(u[i], tam, rhs[1], rhs[0], rhs[2]);
     }
 }
 
-void step(double** u, double** rhs, double** g) {
-    const int n = 10;
+double** step(double** ua, double** rhs, double** g){
+    double** u;
+    u = (double** )malloc(sizeof(double*) * tam);
+
+    const int n = 8;
     std::thread array[n];
     for (int i = 0; i < n; i++)
     {
-        array[i] = std::thread(calc, u,i,n,tam,rhs,g);
+		array[i] = std::thread(calc, u,ua,i,n,tam,rhs,g);
     }
     joinAll(array, n);
     updateGt(u, g, tam);
+
+	for (int i = 0; i < tam; i++)
+	{
+
+		delete[] ua[i];
+	}
+
+    free(ua);
+    return u;
+
 
 
 }
@@ -225,19 +243,19 @@ void adifhn(int z, double kt, char c[],bool report)
     if (kt != -1)
     {
 
-        sprintf(filename, "result_z%d.txt", z);
+        sprintf(filename, "resultados\\result_z%d.txt", z);
 
     }
     else
     {
-        sprintf(filename, "result.txt");
+        sprintf(filename, "resultados\\result.txt");
 
     }
     arquivo = fopen(filename, "w");
     
 
     dx = 1.0 / z, dy = 1.0 / z;
-    L = 2;
+    L = 1;
 
     tam = L / dx ;
 
@@ -260,11 +278,11 @@ void adifhn(int z, double kt, char c[],bool report)
     for (n = 0; n < k; n++)
     {
         std::thread printer = std::thread(print, n, k,kt,report);
-        step(u, rhs, g);
+        u=step(u, rhs, g);
         fliped = true;
         flipmatrixa(u, tam, tam);
         flipmatrixa(g, tam, tam);
-        step(u, rhs, g);
+        u=step(u, rhs, g);
         flipmatrixa(g, tam, tam);
         flipmatrixa(u, tam, tam);
         fliped = false;
@@ -289,7 +307,7 @@ void adifhn(int z, double kt, char c[],bool report)
                         fprintf(arquivo, "%f  %f  %f\n", u[v][j], dx * v,dy*j);
 
                 }
-                if (kt == -1)
+               
                     fprintf(arquivo, "\n");
             }
 

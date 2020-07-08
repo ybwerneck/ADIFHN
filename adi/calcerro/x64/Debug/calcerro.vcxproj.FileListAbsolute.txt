@@ -2,3 +2,5 @@ C:\Users\yanbw\OneDrive\recuperado\x64\Debug\calcerro.exe
 C:\Users\yanbw\OneDrive\recuperado\x64\Debug\calcerro.pdb
 C:\Users\yanbw\Documents\recuperado\x64\Debug\calcerro.exe
 C:\Users\yanbw\Documents\recuperado\x64\Debug\calcerro.pdb
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Debug\calcerro.exe
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Debug\calcerro.pdb

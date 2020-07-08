@@ -141,11 +141,18 @@
   <ItemGroup>
     <ClCompile Include="adifhn.cpp" />
     <ClCompile Include="calcerro.cpp" />
+    <ClCompile Include="display.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adifhn.h" />
+    <ClInclude Include="display.h" />
     <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Texto.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
