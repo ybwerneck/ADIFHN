@@ -3,10 +3,10 @@
 #include <string>
 #include "adifhn.h"
 #include "math.h"
+#include "display.h"
 
 
 double calcError(double a,double b) {
-
     double r = (a - b) / (1 - abs(a));
     return (pow(r,2));
 }
@@ -22,11 +22,11 @@ double Error(char endref[80], char endsol[80]) {
     int i = 0;
     fscanf(referencia, "%lf", &dts);
     fscanf(solucao, "%lf", &dtr);
-    if (abs(dts - dtr) > 0.001)
+    if (abs(dts - dtr) > 0.0001)
     {
         fclose(referencia);
         fclose(solucao);
-        return 0;
+        return -dtr;
     }    
     while (fscanf(solucao, "%lf %lf %lf", &us, &dxs, &dys)==3){
         do {  a = fscanf(referencia, "%lf %lf %lf", &ur, &dxr, &dyr); }
@@ -41,30 +41,42 @@ double Error(char endref[80], char endsol[80]) {
     fclose(referencia);
     fclose(solucao);
     if (i < 100)
-        return i;
+        return -i;
     return sqrt(errot/i);
 }
 int main()
 
 {
-    int n = 1000;
-    double dt = 0.3;
-    char endref[80], endsol[80],endres[99];
-	adifhn(n,dt, endref, true);
+    double dtT = 0.3;
+    char endref[80], endsol[80], endres[99];
+    sprintf(endref, "resultados\\resultref.txt");
+    sprintf(endres, "resultadosErro\\resultado.txt");
+    double dx = 0.001, dt = dx * dx;
+    adifhn(dt, dx, dtT, endref, true);
     system("cls");
-    int zs[] =  {10,20,40,50,100,200};
-   // sprintf(endref,"\resultados\\result_z1000.txt");
-    double array[sizeof(zs)/sizeof(zs[0])];
+    saveFoto(endref,(char*)"refererencia.png", dx, dt);
+
+
+	FILE* resultado;
+	resultado=fopen(endres, "w");
+	fclose(resultado);
+
+    double zs[] = {0.1,0.05,0.02,0.01,0.005,0.002};
+    double array[sizeof(zs) / sizeof(zs[0])];
     for (int i = 0; i < sizeof(zs) / sizeof(zs[0]); i++)
-	{
-		FILE* resultado;
-		sprintf(endres, "resultadosErro\\resultado.txt");
-		resultado = fopen(endres, "a");
-        adifhn(zs[i], dt, endsol,true);
-        array[i] = Error(endref, endsol);       
-        fprintf(resultado,"%lf %lf\n", array[i], 1.0/zs[i]);
+    {
+        double dx = zs[i], dt = dx * dx;
+        sprintf(endsol, "resultados\\result_DX=%f.txt", dx);
+        resultado = fopen(endres, "a");
+        adifhn(dt, dx, dtT, endsol, true);
+        array[i] = Error(endref, endsol);
+        fprintf(resultado, "%lf %lf\n", array[i], dx);
+        char resultadofoto[200];
+		sprintf(resultadofoto, "resultados\\result_DX=%f.gif", dx);
+        saveFoto(endsol,resultadofoto, dx, dt);
         fclose(resultado);
+        
     }
-    return 0;
-    
+	return 0;
+
 }

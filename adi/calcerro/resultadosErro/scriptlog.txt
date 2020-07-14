@@ -1,0 +1,3 @@
+
+plot "resultado.txt" u log(2):log(1):(sprintf("%.4f %.4f",$1,$2)) with labels point pt 7 offset char 1,1 , \
+"resultado.txt" u log(2):log(1):(sprintf("%,4f %.4f",$1,$2)) with lines

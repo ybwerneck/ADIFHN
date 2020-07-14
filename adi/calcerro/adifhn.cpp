@@ -6,7 +6,6 @@
 #include <thread>         // std::thread
 #include "utils.h"// std::thread
 
-
 double dx, dy;
 double G;
 double X;
@@ -19,334 +18,247 @@ int tam;
 double Cm;
 double y, a, e;
 bool fliped;
-int n;   
+int n;
+const int NT = 8;
 
 double** initU()
 {
-    int i, j;
-    double** U = (double**)calloc(sizeof(double*), tam);
-    for (i = 0; i < tam; i++)
-    {
-        U[i] = (double*)calloc(sizeof(double), tam);
-        for (j = 0; j < tam; j++)
-        {
-            U[i][j] = 0.0;
+	int i, j;
+	double** U = (double**)calloc(sizeof(double*), tam);
+	for (i = 0; i < tam; i++)
+	{
+		U[i] = (double*)calloc(sizeof(double), tam);
+		for (j = 0; j < tam; j++)
+		{
+			U[i][j] = 0.0;
 
-            int r = 0.2/dx, c = (tam / 2) ;
-           
-            if (((i - c) * (i - c) + (j - c) * (j - c)) < r * r)
-            {
-                U[i][j] = 1;
+			int r = 0.2 / dx, c = (tam / 2);
 
-            }
-
-        }
-    }
-    return U;
+			if (((i - c) * (i - c) + (j - c) * (j - c)) < r * r)
+			{
+				U[i][j] = 1;
+			}
+		}
+	}
+	return U;
 }
 
 double** initG()
 {
-
-    int i, j;
-    double** G = (double**)calloc(sizeof(double*), tam);
-    for (i = 0; i < tam; i++)
-    {
-        G[i] = (double*)calloc(sizeof(double), tam);
-        for (j = 0; j < tam; j++)
-        {
-            G[i][j] = 0;
-        }
-    }
-    return G;
+	int i, j;
+	double** G = (double**)calloc(sizeof(double*), tam);
+	for (i = 0; i < tam; i++)
+	{
+		G[i] = (double*)calloc(sizeof(double), tam);
+		for (j = 0; j < tam; j++)
+		{
+			G[i][j] = 0;
+		}
+	}
+	return G;
 }
 double** iniciarMatrizRHS()
 {
-    double** matrix = (double**)malloc(sizeof(double*) * tam);
-    int i, j;
-    matrix[0] = (double*)calloc(sizeof(double), tam);
-    matrix[1] = (double*)calloc(sizeof(double), tam);
-    matrix[2] = (double*)calloc(sizeof(double), tam);
+	double** matrix = (double**)malloc(sizeof(double*) * tam);
+	int i, j;
+	matrix[0] = (double*)calloc(sizeof(double), tam);
+	matrix[1] = (double*)calloc(sizeof(double), tam);
+	matrix[2] = (double*)calloc(sizeof(double), tam);
 
-    for (i = 0; i < tam; i++)
-    {
+	for (i = 0; i < tam; i++)
+	{
+		matrix[0][i] = 1 + (2 * Y);
+		matrix[1][i] = -(Y);
+		matrix[2][i] = -(Y);
+	}
 
+	matrix[0][0] = 1 + Y;
+	matrix[0][tam - 1] = 1 + Y;
+	matrix[1][0] = 0.0;
+	matrix[1][tam - 1] = -Y;
+	matrix[2][0] = -Y;
+	matrix[2][tam - 1] = 0.0;
 
-        matrix[0][i] = 1 + (2 * Y);
-        matrix[1][i] = -(Y);
-        matrix[2][i] = -(Y);
-    }
-
-    matrix[0][0] = 1 + Y;
-    matrix[0][tam - 1] = 1 + Y;
-    matrix[1][0] = 0.0;
-    matrix[1][tam - 1] = -Y;
-    matrix[2][0] = -Y;
-    matrix[2][tam - 1] = 0.0;
-
-
-    return matrix;
+	return matrix;
 }
-double aproxU(double U)
+double* getVetorFx(double** Ua, double** g, int x)
 {
-    return U;
+	double* u = (double*)calloc(sizeof(double), tam);
+	int i;
+	for (i = 0; i < tam; i++) {
+		double U = Ua[x][i], UXM1 = (x != 0) ? Ua[x - 1][i] : 0, UXP1 = (x != tam - 1) ? Ua[x + 1][i] : 8;
+		int y = i;
+		double Ru = dt*((U * (1 - U) * (U - a) - g[x][y]) / e);
+		if (x != 0 && x != tam - 1)
+			u[i] = U * (1 - 2 * Y) + Y * UXP1 + Y * UXM1 + Ru;
+		else if (x == 0)
+			u[i] = U * (1 - Y) + Y * UXP1 + Ru;
+
+		else u[i] = U * (1 - Y) + Y * UXM1 + Ru;
+	}
+	
+	return u;
 }
-double Ic(double U, double g)
+void updateG(double** g, double** V, int n, int bgx, int tamx, int tamy)
 {
-    return (U * (1 - U) * (U - a) - g) / e;
-}
-double R(double U, double g)
-{
-    return Ic(aproxU(U), g);
+	int i, j;
 
-}
-float Iapp(double x, double y, double t, double V)
-{
-    if ((t >= 0.1 && t <= 0.3) && ((x > 2.8 && x < 3.2)) && ((y > 2.8 && y < 3.2)))
-    {
-        return  1;
-    }
-    else
-        return V;
-
-}
-double calcularFX(double U, double UXM1, double UXP1,double g, int x, int y)
-
-{
-
-    if (x != 0 && x != tam - 1)
-        return U * (1 - 2 * Y) + Y * UXP1 + Y *UXM1 + R(U, g) * dt;
-    else if (x == 0)
-        return U * (1 - Y) + Y * UXP1 + R(U, g) * dt;
-
-    else return U * (1 - Y) + Y * UXM1 + R((U), g) * dt;
-
-}
-double* getVetorFx(double **Ua, double** g, int x)
-{
-      
-    double* U =(double*) calloc(sizeof(double), tam);
-    int i;
-    for (i = 0; i < tam; i++) {
-        double UX=Ua[x][i],UXM1= (x!=0)?Ua[x - 1][i]:0,UXP1=(x!=tam-1)?Ua[x + 1][i]:8;
-        U[i] = calcularFX(UX,UXM1,UXP1, g[x][i], x, i);
-    }
-    return U;
-}
-void updateG(double** g,double** V,int n, int bgx, int tamx, int tamy)
-{
-    int i, j;
-
-    for (i = bgx; i < tamx; i += n)
-    {
-        for (j = 0; j < tamy; j++)
-        {   
-
-            g[i][j] = g[i][j] + dt * 0.5 * (V[i][j] - (g[i][j] * y));
-
-        }
-    }
-
+	for (i = bgx; i < tamx; i += n)
+	{
+		for (j = 0; j < tamy; j++)
+		{
+			g[i][j] = g[i][j] + dt * 0.5 * (V[i][j] - (g[i][j] * y));
+		}
+	}
 }
 
 void updateGt(double** V, double** g, int tam)
 {
-    int i, j;
-    const int n = 8;
-    std::thread array[n];
-       for (int i = 0; i < n; i++)
-        {
-            array[i] = std::thread(updateG,g,V, n,i,tam,tam);
-        }
-    joinAll(array, n);
-}
-
-void updateGa(double** V, double** g, int tam)
-{
-    int i, j;
-    for (i = 0; i < tam; i++)
-        for (j = 0; j < tam; j++)
-            g[i][j] = g[i][j] + dt * 0.5 * (V[i][j] - (g[i][j] * y));
-
+	int i, j;
+	const int n = NT;
+	std::thread array[n];
+	for (int i = 0; i < n; i++)
+	{
+		array[i] = std::thread(updateG, g, V, n, i, tam, tam);
+	}
+	joinAll(array, n);
 }
 void solve_tridiagonal(double x[], const size_t N, const double a[], const  double b[], const  double c[])
 {
-    size_t n;
+	size_t n;
 
-    double* const cprime = (double*)malloc(sizeof(double) * N);
-    cprime[0] = c[0] / b[0];
-    x[0] = x[0] / b[0];
+	double* const cprime = (double*)malloc(sizeof(double) * N);
+	cprime[0] = c[0] / b[0];
+	x[0] = x[0] / b[0];
 
-    for (n = 1; n < N; n++)
-    {
-        double m = 1.0f / (b[n] - a[n] * cprime[n - 1]);
-        cprime[n] = c[n] * m;
-        x[n] = (x[n] - a[n] * x[n - 1]) * m;
-    }
+	for (n = 1; n < N; n++)
+	{
+		double m = 1.0f / (b[n] - a[n] * cprime[n - 1]);
+		cprime[n] = c[n] * m;
+		x[n] = (x[n] - a[n] * x[n - 1]) * m;
+	}
 
-    for (n = N - 1;n--> 0.0; )
-        x[n] = x[n] - cprime[n] * x[n + 1];
+	for (n = N - 1; n-- > 0.0; )
+		x[n] = x[n] - cprime[n] * x[n + 1];
 
-    free(cprime);
+	free(cprime);
 }
-void print(int n, int k,double kt,bool report) {
-    if (report) {
-
-    int o = kt == -1 ? k : (kt)/dt;
-    system("cls");
-    printf("DT: %.10f DX:%.10f TAM= %d \n Quadro %d \ %d   completed %f", dt, dx, tam,n,o, ((double)n /(o)) * 100);   
-
-}
+void print(int n, int k, double kt, bool report) {
+	if (report) {
+		int o = kt == -1 ? k : (kt) / dt;
+		system("cls");
+		printf("DT: %.10f DX:%.10f TAM= %d \n Quadro %d \ %d   completed %f", dt, dx, tam, n, o, ((double)n / (o)) * 100);
+	}
 }
 
-void calc (double** u,double** ua,int beg,int n,int tam,double** rhs,double** g) {
-    
-    for (int i = beg; i < tam; i+=n)
-    {
-        u[i]=getVetorFx(ua, g, i);
-        solve_tridiagonal(u[i], tam, rhs[1], rhs[0], rhs[2]);
-    }
+void calc(double** u, double** ua, int beg, int n, int tam, double** rhs, double** g) {
+	for (int i = beg; i < tam; i += n)
+	{
+		u[i] = getVetorFx(ua, g, i);
+		solve_tridiagonal(u[i], tam, rhs[1], rhs[0], rhs[2]);
+	}
 }
 
-double** step(double** ua, double** rhs, double** g){
-    double** u;
-    u = (double** )malloc(sizeof(double*) * tam);
+double** step(double** ua, double** rhs, double** g) {
+	double** u;
+	u = (double**)malloc(sizeof(double*) * tam);
 
-    const int n = 8;
-    std::thread array[n];
-    for (int i = 0; i < n; i++)
-    {
-		array[i] = std::thread(calc, u,ua,i,n,tam,rhs,g);
-    }
-    joinAll(array, n);
-    updateGt(u, g, tam);
+	const int n = NT;
+	std::thread array[n];
+	for (int i = 0; i < n; i++)
+	{
+		array[i] = std::thread(calc, u, ua, i, n, tam, rhs, g);
+	}
+	joinAll(array, n);
+	updateGt(u, g, tam);
 
 	for (int i = 0; i < tam; i++)
 	{
-
 		delete[] ua[i];
 	}
 
-    free(ua);
-    return u;
-
-
-
+	free(ua);
+	return u;
 }
-void adifhn(int z, double kt, char c[],bool report)
+void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool report)
 {
+	FILE* arquivo;
 
-    FILE* arquivo;
+	char* filename = c;
+	arquivo = fopen(filename, "w");
 
-    char filename[80];
+	dx = dxP, dy = dxP;
+	L = 1.1;
 
-    if (kt != -1)
-    {
+	tam = L / dx;
 
-        sprintf(filename, "resultados\\result_z%d.txt", z);
+	G = 25;
+	X = 100;
+	dt = dtP;
+	Segundos = 1;
+	k = Segundos / dt;
+	Y = (G / X) * ((dt) / (2 * dx * dx));
+	Cm = 0.0;
+	y = 0.5, a = 0.1, e = 0.01;
+	double** u;
+	double** g;
+	double** rhs = iniciarMatrizRHS();
+	u = initU();
+	g = initG();
+	fliped = false;
+	int n;
+	double** L = initU();
+	
+	for (n = 0; n < k; n++)
+	{
+		std::thread printer = std::thread(print, n, k, dtAlvo, report);
+		printer.detach();
 
-    }
-    else
-    {
-        sprintf(filename, "resultados\\result.txt");
+		u = step(u, rhs, g);
+		flipmatrixa(u, tam, tam);
+		flipmatrixa(g, tam, tam);
+		fliped = true;
 
-    }
-    arquivo = fopen(filename, "w");
-    
+		u = step(u, rhs, g);
+		flipmatrixa(g, tam, tam);
+		flipmatrixa(u, tam, tam);
+		fliped = false;
 
-    dx = 1.0 / z, dy = 1.0 / z;
-    L = 1;
+		if (dtAlvo == -1 || dtAlvo <= n * dt) {
+			if (dtAlvo != -1)
+				fprintf(arquivo, "%f \n", dt * n);
 
-    tam = L / dx ;
+			for (int v = 0; v < tam; v++)
+			{
+				for (int j = 0; j < tam; j++)
+				{
+					double x = v * dx;
+					double y = j * dx;
+					double t = n * dt;
 
-    G = 25;
-    X = 100;
-    dt = 1.0 / (z * z);
-    Segundos = 1;
-    k = Segundos / dt;
-    Y = (G / X) * ((dt) / (2 * dx * dx));
-    Cm = 0.0;
-    y = 0.5, a = 0.1, e = 0.01;
-    double** u;
-    double** g;
-    double** rhs = iniciarMatrizRHS();
-    u = initU();
-    g = initG();
-    fliped = false;
-    int n;
-    double** L=initU();
-    for (n = 0; n < k; n++)
-    {
-        std::thread printer = std::thread(print, n, k,kt,report);
-        u=step(u, rhs, g);
-        fliped = true;
-        flipmatrixa(u, tam, tam);
-        flipmatrixa(g, tam, tam);
-        u=step(u, rhs, g);
-        flipmatrixa(g, tam, tam);
-        flipmatrixa(u, tam, tam);
-        fliped = false;
-        if (kt == -1 || kt <= n*dt) {
+					if (dtAlvo == -1)
+						fprintf(arquivo, "%.6f %.6f %.6f %f \n", t, x, y, u[v][j]);
+					else
+						fprintf(arquivo, "%f  %f  %f\n", u[v][j], dx * v, dy * j);
+				}
 
-            if(kt!=-1)
-                fprintf(arquivo, "%f \n", dt * n);
+				fprintf(arquivo, "\n");
+			}
 
-            for (int v = 0; v < tam; v++)
-            {
-                for (int j = 0; j < tam; j++)
-                {
+			int i;
+			if (dtAlvo == -1)
+			{
+				fprintf(arquivo, "\n\n");
+			}
+		}        
+		if (dtAlvo <= n * dt && dtAlvo != -1)
+			break;
+	}
 
-                    double x = v * dx;
-                    double y = j * dx;
-                    double t = n * dt;
+	free(u);
+	free(g);
 
+	fclose(arquivo);
 
-                    if (kt == -1)
-                        fprintf(arquivo, "%.6f %.6f %.6f %f \n", t, x, y, u[v][j]);
-                    else
-                        fprintf(arquivo, "%f  %f  %f\n", u[v][j], dx * v,dy*j);
-
-                }
-               
-                    fprintf(arquivo, "\n");
-            }
-
-
-            int i;
-            if (kt == -1)
-            {
-                fprintf(arquivo, "\n\n");
-
-            }
-
-        }        printer.join();
-
-        if (kt <= n*dt && kt!=-1)
-            break;
-
-    }
-
-    free(u);
-    free(g);
-
-    fclose(arquivo);
- 
-    if (kt == -1)
-    {
-
-        char gnuplotparam[80];
-        sprintf(gnuplotparam, "gnuplot  -e dt=%f -e dx=%f -p  \"script.txt\" ", dt, dx);
-
-        system(gnuplotparam);
-
-       }
-    else
-    {
-        int l;
-        for (l = 0; (l < 80 || filename[l] == '/0'); l++)
-            c[l] = filename[l];
-        printf("%s foi salvo!", filename);
-    }
-    
-    
+	printf("%s foi salvo!", filename);
 }

@@ -68,6 +68,22 @@ void copyMatrixe(double** origem, double** destino, int bgx, int tamx, int tamy)
 
 }
 
+void flipMatrixe(double** origem, double** destino, int bgx, int tamx, int tamy)
+{
+	int i, j;
+
+	for (i = bgx; i < tamx; i += n)
+	{
+		for (j = 0; j < tamy; j++)
+		{
+
+			destino[i][j] = origem[j][i];
+
+		}
+	}
+
+}
+
 
 void copyMatrix(double** origem, double** destino, int tamx, int tamy)
 {
@@ -82,62 +98,6 @@ void copyMatrix(double** origem, double** destino, int tamx, int tamy)
 
 }
 
-void allocmatrix(double** u, double** L, int k, int tamx) {
-    int i, j; for (i = k; i < tamx; i += n)
-    {
-        L[i] = (double*)calloc(sizeof(double), tamx);
-
-    }
-}
-void unallocmatrix(double** u, double** L, int k, int tamx) {
-    int i, j; for (i = k; i < tamx; i += n/2)
-    {
-        delete[] L[i];
-
-    }
-}
-void flipmatrix(double** u, double** L, int k, int tamx, int tamy) {
-    int i, j; for (i = k; i < tamx; i += n)
-    {
-        for (j = k; j < tamy; j++)
-        {
-            L[i][j] = u[j][i];
-        }
-    }
-}
-void flipmatrixt(double** u, int tamx, int tamy)
-{
-
-    double** L = (double**)calloc(sizeof(double*), tamy);
-    int i, j;
-    std::thread array[n];
-    for (int i = 0; i < n; i++)
-    {
-        array[i] = std::thread(allocmatrix, u, L, i,tamx);
-    }
-    joinAll(array, n);
-
-    for (int i = 0; i < n; i++)
-    {
-        array[i] = std::thread(flipmatrix, u, L, i, tamx, tamy);
-    }
-    joinAll(array, n);
-
-    for (i = 0; i < n; i++)
-    {
-        array[i] = std::thread(copyMatrixe, L, u, i, tamx, tamy);
-    }
-    joinAll(array, n);
-
-    for (i = 0; i < tamx; i++)
-    {
-
-        delete[] L[i];
-    }
-    delete[] L;
-}
-
-
 
 void flipmatrixa(double** u, int tamx, int tamy)
 {
@@ -148,12 +108,15 @@ void flipmatrixa(double** u, int tamx, int tamy)
     for (i = 0; i < tamx; i++)
     {
         L[i] = (double*)calloc(sizeof(double), tamx);
-        for (j = 0; j < tamy; j++)
-        {
-            L[i][j] = u[j][i];
-        }
+        
     }
-    
+
+	for (i = 0; i < n; i++)
+	{
+		array[i] = std::thread(flipMatrixe, u, L, i, tamx, tamy);
+	}
+	joinAll(array, nt);
+
     for (i = 0; i < n; i++)
     {
          array[i] = std::thread(copyMatrixe, L,u, i, tamx, tamy);
