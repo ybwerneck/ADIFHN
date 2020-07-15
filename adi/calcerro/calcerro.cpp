@@ -47,15 +47,15 @@ double Error(char endref[80], char endsol[80]) {
 int main()
 
 {
-    double dtT = 0.3;
+    double dtT = 0.00001;
     char endref[80], endsol[80], endres[99];
     sprintf(endref, "resultados\\resultref.txt");
     sprintf(endres, "resultadosErro\\resultado.txt");
     double dx = 0.001, dt = dx * dx;
     adifhn(dt, dx, dtT, endref, true);
     system("cls");
-    saveFoto(endref,(char*)"refererencia.png", dx, dt);
-
+    exibirGif(endref, dx, dt);
+    return 0;
 
 	FILE* resultado;
 	resultado=fopen(endres, "w");

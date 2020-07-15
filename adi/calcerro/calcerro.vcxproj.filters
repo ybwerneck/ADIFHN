@@ -27,6 +27,9 @@
     <ClCompile Include="display.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adifhn.h">
@@ -36,6 +39,9 @@
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="display.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>

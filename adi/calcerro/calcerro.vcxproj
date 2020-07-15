@@ -150,11 +150,15 @@
     <ClCompile Include="display.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adifhn.h" />
     <ClInclude Include="display.h" />
+    <ClInclude Include="matrix.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

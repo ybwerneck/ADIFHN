@@ -14,8 +14,5 @@ set label front sprintf("ADI dt= %f dx=%f",dt,dx) at graph 0.1, graph 0.9 font "
 
 set size square 1,1
 set pm3d map
-splot sprintf("%s",endf)  u 2:3:4  index i palette with pm3d, 
-
-
- 
+splot sprintf("%s",end)  u 2:3:4  index i palette with pm3d,  
   }     
