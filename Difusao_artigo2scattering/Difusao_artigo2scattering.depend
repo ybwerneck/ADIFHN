@@ -1,9 +1,0 @@
-# depslib dependency file v1.0
-1561478378 source:/home/yan/Downloads/Difusao_artigo2_24_04/Difusao_artigo2scattering/main.cpp
-	<iostream>
-	<math.h>
-	<string.h>
-	<vector>
-	<iomanip>
-	<cmath>
-

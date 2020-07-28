@@ -1,6 +1,11 @@
-﻿  calcerro.cpp
-C:\Users\yanbw\Documents\bolsaic\adi\calcerro\calcerro.cpp(17,12): warning C4101: 'dxsol': variável local não referenciada
-C:\Users\yanbw\Documents\bolsaic\adi\calcerro\calcerro.cpp(17,19): warning C4101: 'dxref': variável local não referenciada
+﻿  adifhn.cpp
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(344,10): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(364,9): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(366,10): warning C4129: ' ': sequência de escape de caractere não reconhecida
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(374,9): warning C4101: 'j': variável local não referenciada
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(521,10): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(525,15): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
+C:\Users\yanbw\Documents\bolsaic\adi\calcerro\adifhn.cpp(583,8): warning C4101: 'i': variável local não referenciada
 LINK : warning LNK4075: ignorando '/INCREMENTAL' devido a especificação '/PROFILE'
 adifhn.obj : warning LNK4075: ignorando '/EDITANDCONTINUE' devido a especificação '/OPT:REF'
   calcerro.vcxproj -> C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Debug\calcerro.exe

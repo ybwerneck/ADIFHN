@@ -1,5 +1,7 @@
 #include "matrix.h"
 using namespace std;
+int Matrix::a = 0;
+int Matrix::b = 0;
 
 // Constructor for Any Matrix
 Matrix::Matrix(unsigned rowSize, unsigned colSize, double initial) {
@@ -10,6 +12,7 @@ Matrix::Matrix(unsigned rowSize, unsigned colSize, double initial) {
 	{
 		m_matrix[i].resize(colSize, initial);
 	}
+	fliped = false;
 }
 
 Matrix::Matrix(const Matrix& B)
@@ -21,18 +24,25 @@ Matrix::Matrix(const Matrix& B)
 }
 
 Matrix::~Matrix() {
+	for (unsigned i = 0; i < m_matrix.size(); i++)
+	{
+		m_matrix[i].clear();
+
+	}
+	m_matrix.clear();
 
 }
 
 
-// Returns value of given location when asked in the form A(x,y)
 double& Matrix::operator()(const unsigned& rowNo, const unsigned& colNo)
 {
 
-	if (!fliped)
+	if (!fliped) {
 		return this->m_matrix[rowNo][colNo];
-	else
+	}
+	else{
 		return this->m_matrix[colNo][rowNo];
+}
 
 
 }

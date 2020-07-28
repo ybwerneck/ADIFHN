@@ -47,21 +47,20 @@ double Error(char endref[80], char endsol[80]) {
 int main()
 
 {
-    double dtT = 0.00001;
-    char endref[80], endsol[80], endres[99];
+    double dtT = -1;
+    char endref[80], endsol[80], endres[99];                             
     sprintf(endref, "resultados\\resultref.txt");
     sprintf(endres, "resultadosErro\\resultado.txt");
-    double dx = 0.001, dt = dx * dx;
-    adifhn(dt, dx, dtT, endref, true);
+    double dx = 0.1, dt = dx * dx;
+     adifhn(dt, dx, dtT, endref, true);
     system("cls");
-    exibirGif(endref, dx, dt);
+    exibirGif(endref,dx, dt);
     return 0;
-
-	FILE* resultado;
+    FILE* resultado;
 	resultado=fopen(endres, "w");
 	fclose(resultado);
 
-    double zs[] = {0.1,0.05,0.02,0.01,0.005,0.002};
+    double zs[] = {0.1,0.05,0.02,0.01,0.005,0.002,0.001};
     double array[sizeof(zs) / sizeof(zs[0])];
     for (int i = 0; i < sizeof(zs) / sizeof(zs[0]); i++)
     {
@@ -72,7 +71,7 @@ int main()
         array[i] = Error(endref, endsol);
         fprintf(resultado, "%lf %lf\n", array[i], dx);
         char resultadofoto[200];
-		sprintf(resultadofoto, "resultados\\result_DX=%f.gif", dx);
+		sprintf(resultadofoto, "resultados\\result_DX=%f.png", dx);
         saveFoto(endsol,resultadofoto, dx, dt);
         fclose(resultado);
         

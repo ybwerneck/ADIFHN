@@ -27,12 +27,13 @@ private:
 	unsigned m_colSize;
 	vector<vector<double> > m_matrix;
 	bool fliped=false;
-public:
+	public:
 	Matrix(unsigned, unsigned, double);
 	Matrix(const char*);
 	Matrix(const Matrix&);
 	~Matrix();
-	Matrix transpose();
+	Matrix transpose(); static int a, b;
+
 
 	double& operator()(const unsigned&, const unsigned&);
 	void operator()(const unsigned&, const unsigned&, double);
@@ -45,4 +46,5 @@ public:
 	void setLine(const int col, double* val);
 
 };
+
 #endif /* defined(__EE_242_Project_2__matrix__) */
