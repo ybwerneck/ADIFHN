@@ -56,8 +56,8 @@ int main()
     adifhn(dt, dx, dtT, endrefP, true,true);
     adifhn(dt, dx, dtT, endref, true,false);
     system("cls");
-    saveFoto(endref,(char*) "resultadoref.png",dx, dt);
-	saveFoto(endref, (char*)"resultadorefP.png", dx, dt);
+    saveFoto(endref,(char*) "resultados\\fotos\\resultadoref.png",dx, dt);
+	saveFoto(endref, (char*)"resultados\\fotos\\resultadorefP.png", dx, dt);
     FILE* resultado;
 	resultado=fopen(endres, "a");
 	fclose(resultado);
