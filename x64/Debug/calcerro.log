@@ -1,19 +1,6 @@
-﻿  adifhn.cpp
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(48,10): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(68,9): warning C4244: 'inicializando': conversão de 'double' para 'int', possível perda de dados
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(70,10): warning C4129: ' ': sequência de escape de caractere não reconhecida
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(78,9): warning C4101: 'j': variável local não referenciada
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(225,10): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(229,15): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
-C:\Users\yanbw\Documents\ADI\ADIFHN\adifhn.cpp(287,8): warning C4101: 'i': variável local não referenciada
-  calcerro.cpp
+﻿  calcerro.cpp
 C:\Users\yanbw\Documents\ADI\ADIFHN\calcerro.cpp(17,12): warning C4101: 'dxsol': variável local não referenciada
 C:\Users\yanbw\Documents\ADI\ADIFHN\calcerro.cpp(17,19): warning C4101: 'dxref': variável local não referenciada
-  matrix.cpp
-  utils.cpp
-C:\Users\yanbw\Documents\ADI\ADIFHN\utils.cpp(106,12): warning C4101: 'j': variável local não referenciada
-  Gerando Código...
-  display.cpp
 LINK : warning LNK4075: ignorando '/INCREMENTAL' devido a especificação '/PROFILE'
 adifhn.obj : warning LNK4075: ignorando '/EDITANDCONTINUE' devido a especificação '/OPT:REF'
   calcerro.vcxproj -> C:\Users\yanbw\Documents\ADI\ADIFHN\x64\Debug\calcerro.exe

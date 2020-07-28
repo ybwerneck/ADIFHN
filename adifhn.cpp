@@ -34,7 +34,8 @@ Matrix* u, * ua, * g;
 std::mutex mutex, mutex2, mutex3;
 std::condition_variable cUg, cCal, cs, cs2;
 std::atomic<int> done;
-std::atomic<bool> report;
+std::atomic<bool> report,predict;
+
 Matrix* initU()
 {
 	int i, j;
@@ -126,13 +127,13 @@ double* getVetorFx(int x)
 
 	int y = 0;
 	for (y = 0; y < tam; y++) {
-
 		double U = ua->operator()(x, y), UXM1, UXP1,G=g->operator()(x,y),Ru;
 		UXM1 = (x != 0) ? ua->operator()(x - 1, y) : 0, UXP1 = (x != tam - 1) ? ua->operator()(x + 1, y) : 0;
-		if (true) {   // true para ultilizar uma aproximação de U ulitlizando o método de Euler no calculo de Ru
+		if (predict) {   // true para ultilizar uma aproximação de U ulitlizando o método de Euler no calculo de Ru
 
-			U = (R(U,G) + difusaoEuler(x, y)) * dt + U;
+			Ru=R( (R(U,G) + difusaoEuler(x, y)) * dt + U,G);
 		}
+		else
 		Ru = R(U,G);
 		if (x != 0 && x != tam - 1)
 			Fx[y] = U * (1 - 2 * Y) + Y * UXP1 + Y * UXM1 + Ru;
@@ -170,14 +171,14 @@ void calc(int beg, int tam, double** rhs) {
 	while (flagCalkill[beg] == false) {
 		cs.notify_one();
 		std::unique_lock<std::mutex> lock(mutex); 
-		//Espera hora de iniciar novo passo
+		//Espera para iniciar novo passo
 		do cCal.wait_for(lock,10ms, [beg] {return (flagCal[beg] || flagCalkill[beg]); }); 
 		while (!(flagCal[beg] || flagCalkill[beg]));
 		lock.unlock();
 		if (flagCalkill[beg] == true)
 			break; //Finaliza thread com flag
-		
-		//Passo
+	
+	   //Step
 		for (int i = beg; i < tam; i += NT)
 		{
 			double* Fx = getVetorFx(i);
@@ -191,8 +192,8 @@ void calc(int beg, int tam, double** rhs) {
 			delete[] Fx;
 
 		}
-		//-----------Passo
-		flagCal[beg] = false; //Avisa que acabou a execução do passo. 
+		//-----------Step
+		flagCal[beg] = false; //Avisa que acabou a execução do step 
 		cs.notify_one();
 
 
@@ -202,7 +203,7 @@ void calc(int beg, int tam, double** rhs) {
 void calctridiag() {
 	int k;
 
-	//Seta a flag que indica para as threads que devem executar um passo 	for (done=0,k = 0; k < NT; k++)
+	//Seta a flag que indica para as threads que devem executar um step	
 	for(k=0;k<NT;k++){
 		flagCal[k] = true;
 
@@ -214,14 +215,15 @@ void calctridiag() {
 	do cs.wait_for(lock, 100ms, [] {return(areDone(flagCal, NT));}); 
 		while (!areDone(flagCal,NT));
 }
-void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB)
+void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool previsaoEuler)
 {
 	//Inicialização de variaveis
+	predict = previsaoEuler;
 	FILE* arquivo;
 	char* filename = c;
 	arquivo = fopen(filename, "w");
 	dx = dxP, dy = dxP;
-	L = 1.1;
+	L = 2.-0;
 	tam = L / dx;
 	G = 25,	X = 100;
 	dt = dtP;
@@ -243,19 +245,11 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB)
 	for (int i = 0; i < NT; i++)
 	{
 		flagCal[i] = false;
-	}
-	for (int i = 0; i < NT; i++)
-	{
 		flagCalkill[i] = false;
-	}
-	for (int i = 0; i < NT; i++)
-	{
-		threadsCalc[i] = std::thread(calc, i, tam, rhs);
-
-
+		threadsCalc[i] = std::thread(calc, i, tam, rhs); //Cada thread executa o passo para algumas linhas especeficas da matrix
 	}
 	report = printB;
-	std::thread printer = std::thread(print, k, dtAlvo);
+	std::thread printer = std::thread(print, k, dtAlvo); //Thread para mostrar o progesso
 	//----------------Inicialização de Threds
 
 	int n;
@@ -290,14 +284,17 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB)
 				fprintf(arquivo, "\n\n");
 			}
 		}
+		//--------------Printa matrix no arquivo
+
 		//Para a execução apos atingir o tempo desejado
 		if (dtAlvo <= n * dt && dtAlvo != -1) {break;}
+
 		
 		//Loop principal
 
-
 		//t->t+1/2 
-		calctridiag(); // Calcula FX e resolve a matrix tridiagonal, ultiliza ua com referencia e assigna valores obtidos em U
+		calctridiag();
+		// Calcula FX e resolve a matrix tridiagonal, ultiliza ua com referencia e assigna valores obtidos em u
 		u->flip();		//Inverte a matrix em uma inversão lógica 
 		ua->flip();
 		g->flip();
@@ -312,7 +309,7 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB)
 		//----Loop principal
 
 	}
-	//Encerrar Threads e fechar arquivo
+	//Encerra Threads e fecha arquivo
 	for (int i = 0; i < NT; i++)
 	{
 		flagCalkill[i] = true;

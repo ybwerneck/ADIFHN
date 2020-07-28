@@ -1,1 +1,2 @@
 C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Release\calcerro.exe
+C:\Users\yanbw\Documents\ADI\ADIFHN\x64\Release\ADIFHN.exe

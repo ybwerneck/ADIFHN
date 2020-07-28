@@ -56,19 +56,16 @@ void Matrix::operator()(const unsigned& rowNo, const unsigned& colNo, double Val
 }
 
 
-// No brainer - returns row #
 unsigned Matrix::getRows() const
 {
 	return this->m_rowSize;
 }
 
-// returns col #
 unsigned Matrix::getCols() const
 {
 	return this->m_colSize;
 }
 
-// Take any given matrices transpose and returns another matrix
 Matrix Matrix::transpose()
 {
 	Matrix Transpose(m_colSize, m_rowSize, 0.0);
@@ -81,7 +78,6 @@ Matrix Matrix::transpose()
 	return Transpose;
 }
 
-// Prints the matrix beautifully
 void Matrix::print() const
 {
 	cout << "Matrix: " << endl;
