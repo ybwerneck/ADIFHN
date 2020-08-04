@@ -120,13 +120,36 @@ double difusaoEuler(int x, int y) {
 		dify = (u->operator()(x, y) - u->operator()(x, y + 1)) * Y;
 	else
 		dify = (u->operator()(x, y) - u->operator()(x, y - 1))* Y;
-	return difx + dify;
+	return (difx + dify);
 
 }
 double R(double U, double G) {
-	return  dt * ((U * (1 - U) * (U - a) - G) / (2*e));
+	return  dt*((U * (1 - U) * (U - a) - G) / (2*e));
 }
+
+double Difusao() {
+	for (int i = 0; i < tam; i++)
+	{
+		for (int j = 0; j < tam; j++)
+		{
+			u->operator()(i, j, difusaoEuler(i, j)+u->operator()(i,j));
+
+		}
+	}
+}
+double Reacao() {
+	for (int i = 0; i < tam; i++)
+	{
+		for (int j = 0; j < tam; j++)
+		{
+			u->operator()(i, j,R(u->operator()(i,j),g->operator()(i,j)));
+
+		}
+	}
+}
+
 Matrix* Uaprox;
+/*
 double* getVetorFx(int x)
 {
 	double* Fx;
@@ -139,12 +162,13 @@ double* getVetorFx(int x)
 
 		if (predict) {   // true para ultilizar uma aproximação de U ulitlizando o método de Euler no calculo de Ru
 
-			if(!ua->isFliped())Uaprox->operator()(x,y,((R(U, G) + difusaoEuler(x, y))* dt + U));
+			if(!ua->isFliped())
+				Uaprox->operator()(x,y,((R(U, G) + difusaoEuler(x, y)) + U));
 			
 			Ru=R(Uaprox->operator()(x,y),G);
 		}
 		else
-		Ru = R(U,G);
+		Ru =R(U,G);
 
 		if (x != 0 && x != tam - 1)
 			Fx[y] = U * (1 - 2 * Y) + Y * UXP1 + Y * UXM1 + Ru;
@@ -227,6 +251,7 @@ void calctridiag() {
 	do cs.wait_for(lock, 100ms, [] {return(areDone(flagCal, NT));}); 
 		while (!areDone(flagCal,NT));
 }
+*/
 void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool previsaoEuler)
 {
 	//Inicialização de variaveis
@@ -254,13 +279,6 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 
 
 	//Inicialização de Threds
-	std::thread threadsCalc[NT];
-	for (int i = 0; i < NT; i++)
-	{
-		flagCal[i] = false;
-		flagCalkill[i] = false;
-		threadsCalc[i] = std::thread(calc, i, tam, rhs); //Cada thread executa o passo para algumas linhas especeficas da matrix
-	}
 	report = printB;
 	std::thread printer = std::thread(print, k, dtAlvo); //Thread para mostrar o progesso
 	//----------------Inicialização de Threds
@@ -306,30 +324,18 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 		//Loop principal
 
 		//t->t+1/2 
-		calctridiag();
-		// Calcula FX e resolve a matrix tridiagonal, ultiliza ua com referencia e assigna valores obtidos em u
-		u->flip();		//Inverte a matrix em uma inversão lógica 
-		ua->flip();
-		g->flip();
+		
+		Reacao();
+		Difusao();
+		Reacao();
 		std::swap(u, ua); //Passa os Valores de U para a variavel de referencia
 
-		//t+1/2->t+1  com a matrix invertida
-		calctridiag();
-		u->flip();
-		ua->flip();
-		g->flip();
-		std::swap(u, ua);
+		
 		//----Loop principal
 
 	}
 	//Encerra Threads e fecha arquivo
-	for (int i = 0; i < NT; i++)
-	{
-		flagCalkill[i] = true;
-		cCal.notify_all();
-		threadsCalc[i].join();
-
-	}
+	
 
 	fclose(arquivo);
 	report = false;
