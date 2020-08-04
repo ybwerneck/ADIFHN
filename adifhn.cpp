@@ -71,6 +71,12 @@ void print(int k, double kt) {
 		printf("\nDT: %.10f DX:%.10f TAM= %d \n Quadro %d \ %d   completed %f", dt, dx, tam, n, o, ((double)n / (o)) * 100);
 		std::this_thread::sleep_for(300ms);
 	}
+	int n = npar;
+	int o = kt == -1 ? k : (kt) / dt;
+
+	system("cls");
+	printf("\nDT: %.10f DX:%.10f TAM= %d \n Quadro %d \ %d   completed %f", dt, dx, tam, n, o, ((double)n / (o)) * 100);
+
 }
 
 double** iniciarMatrizRHS()
@@ -117,9 +123,10 @@ double difusaoEuler(int x, int y) {
 	return difx + dify;
 
 }
-double R(double U, double g) {
-	return  dt * ((U * (1 - U) * (U - a) - g) / e);
+double R(double U, double G) {
+	return  dt * ((U * (1 - U) * (U - a) - G) / (2*e));
 }
+Matrix* Uaprox;
 double* getVetorFx(int x)
 {
 	double* Fx;
@@ -129,12 +136,16 @@ double* getVetorFx(int x)
 	for (y = 0; y < tam; y++) {
 		double U = ua->operator()(x, y), UXM1, UXP1,G=g->operator()(x,y),Ru;
 		UXM1 = (x != 0) ? ua->operator()(x - 1, y) : 0, UXP1 = (x != tam - 1) ? ua->operator()(x + 1, y) : 0;
+
 		if (predict) {   // true para ultilizar uma aproximação de U ulitlizando o método de Euler no calculo de Ru
 
-			Ru=R( (R(U,G) + difusaoEuler(x, y)) * dt + U,G);
+			if(!ua->isFliped())Uaprox->operator()(x,y,((R(U, G) + difusaoEuler(x, y))* dt + U));
+			
+			Ru=R(Uaprox->operator()(x,y),G);
 		}
 		else
 		Ru = R(U,G);
+
 		if (x != 0 && x != tam - 1)
 			Fx[y] = U * (1 - 2 * Y) + Y * UXP1 + Y * UXM1 + Ru;
 		else if (x == 0)
@@ -185,7 +196,8 @@ void calc(int beg, int tam, double** rhs) {
 			Fx = solve_tridiagonal(Fx, tam, rhs[1], rhs[0], rhs[2]);
 
 			for (int j = 0; j < tam; j++)
-			{
+			{	
+
 				u->operator()(i, j, Fx[j]);
 				g->operator()(i, j, g->operator()(i, j) + dt * 0.5 * (u->operator()(i, j) - (g->operator()(i, j) * y)));
 			}
@@ -223,18 +235,19 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 	char* filename = c;
 	arquivo = fopen(filename, "w");
 	dx = dxP, dy = dxP;
-	L = 2.-0;
+	L =  1.1;
 	tam = L / dx;
 	G = 25,	X = 100;
 	dt = dtP;
-	Segundos = 2;
+	Segundos = 3;
 	k = Segundos / dt;
-	Y = (G / X) * ((dt) / (2 * dx * dx));
-	Cm = 0.0,y = 0.5, a = 0.1, e = 0.01;
+	Y = (G / X) * ((dt) / (2  * dx * dx));
+	Cm = 0.0,y = 0.5, a = 0.1, e = 0.005;
 	double** rhs = iniciarMatrizRHS();
 	g = new Matrix(tam, tam, 0);
 	u = initU();
 	ua = initU();
+	Uaprox = initU();
 	flagCal = (bool*)malloc(sizeof(bool) * NT);
 	flagCalkill = (bool*)malloc(sizeof(bool) * NT);
 	//-------------------Inicialização de variaveis
