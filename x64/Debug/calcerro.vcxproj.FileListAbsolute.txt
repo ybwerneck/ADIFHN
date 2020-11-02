@@ -6,3 +6,5 @@ C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Debug\calcerro.exe
 C:\Users\yanbw\Documents\bolsaic\adi\calcerro\x64\Debug\calcerro.pdb
 C:\Users\yanbw\Documents\ADI\ADIFHN\x64\Debug\ADIFHN.exe
 C:\Users\yanbw\Documents\ADI\ADIFHN\x64\Debug\ADIFHN.pdb
+C:\Users\yanbw\Documents\bolsa\adi\ADIFHN\x64\Debug\ADIFHN.exe
+C:\Users\yanbw\Documents\bolsa\adi\ADIFHN\x64\Debug\ADIFHN.pdb

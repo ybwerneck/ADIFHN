@@ -1,7 +1,7 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(467,5): warning MSB8028: O diretório intermediário (x64\Debug\) contém arquivos compartilhados de outro projeto (calcerro.vcxproj). Isso pode levar a um comportamento incorreto de limpeza e recompilação.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (calcerro.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   calcerro.cpp
-C:\Users\yanbw\Documents\ADI\ADIFHN\calcerro.cpp(17,12): warning C4101: 'dxsol': variável local não referenciada
-C:\Users\yanbw\Documents\ADI\ADIFHN\calcerro.cpp(17,19): warning C4101: 'dxref': variável local não referenciada
-LINK : warning LNK4075: ignorando '/INCREMENTAL' devido a especificação '/PROFILE'
-adifhn.obj : warning LNK4075: ignorando '/EDITANDCONTINUE' devido a especificação '/OPT:REF'
-  calcerro.vcxproj -> C:\Users\yanbw\Documents\ADI\ADIFHN\x64\Debug\ADIFHN.exe
+C:\Users\yanbw\Documents\bolsa\adi\ADIFHN\calcerro.cpp(17,12): warning C4101: 'dxsol': unreferenced local variable
+C:\Users\yanbw\Documents\bolsa\adi\ADIFHN\calcerro.cpp(17,19): warning C4101: 'dxref': unreferenced local variable
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/PROFILE' specification
+adifhn.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:REF' specification
+  calcerro.vcxproj -> C:\Users\yanbw\Documents\bolsa\adi\ADIFHN\x64\Debug\ADIFHN.exe

@@ -23,8 +23,8 @@ void saveFoto(char* endf, char* endr, double dx, double dt) {
 	system(gnuplotparam);
 
 }
-void exibirFoto(char* endf, double dx, double dt) {
+void exibirFoto(char* endf, double dx, double dt,double dtTarget) {
 	char gnuplotparam[200];
-	sprintf(gnuplotparam, "gnuplot  -e dt=%f -e dx=%f -e end=\'%s\' -p  \"scripts\\exibirFoto.txt\" ", dt, dx, endf);
+	sprintf(gnuplotparam, "gnuplot  -e dt=%f -e dx=%f -e end=\'%s\' -e dtT=\'%d\'  -p  \"scripts\\exibirFoto.txt\" ", dt, dx, endf,dtTarget);
 	system(gnuplotparam);
 }

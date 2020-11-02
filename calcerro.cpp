@@ -50,20 +50,22 @@ int main()
  
     
     double dtT = 0.3;
-    char endref[80], endrefP[80], endres[99];
-    sprintf(endref, "resultados\\resultref.txt");
-	sprintf(endrefP, "resultados\\resultrefP.txt");
+    char endref[80], endres[99];
+    sprintf(endref, "resultados\\resultrefP.txt");
     sprintf(endres, "resultadosErro\\resultado.txt");
-    double dx = 0.0001, dt = dx * dx;
-   adifhn(dx, dx, dtT, endrefP, true,true);
-    //  adifhn(dt, dx, dtT, endref, true, false);
+    double dx = 0.01, dt = dx * dx;
+    adifhn(dt, dx,dtT, endref, true,false);
     system("cls");
-    saveFoto(endref,(char*) "resultados\\fotos\\resultadoref.png",dx, dt);
-	saveFoto(endref, (char*)"resultados\\fotos\\resultadorefP.png", dx, dt);
+    saveFoto(endref, (char*)"resultados\\fotos\\referencia.png",dx, dt);
+     
     FILE* resultado;
 	resultado=fopen(endres, "w");
 	fclose(resultado);
+    
+    
+
     double zs[] = {0.1,0.05,0.02,0.01,0.005,0.002,0.001,0.0005,0.0002};
+
     for (int i = 0; i < sizeof(zs) / sizeof(zs[0]); i++)
     {
         
@@ -72,7 +74,7 @@ int main()
         double dx = zs[i], dt = dx * dx;
 
 
-        /*
+  
         sprintf(endsol, "resultados\\result_DX=%f.txt", dx);
         resultado = fopen(endres, "a");
         adifhn(dt, dx, dtT, endsol, true,false);
@@ -81,16 +83,7 @@ int main()
         sprintf(resultadofoto, "resultados\\fotos\\result_DX=%f.png", dx);
         saveFoto(endsol,resultadofoto, dx, dt);
         fclose(resultado);
-        */
-        sprintf(endsol, "resultados\\resultP_DX=%f.txt", dx);
-		resultado = fopen(endres, "a");
-		adifhn(dx, dx, dtT, endsol, true,true);
-		e = Error(endrefP, endsol);
-		fprintf(resultado, "%f %lf\n", e,dx);
-		sprintf(resultadofoto, "resultados\\fotos\\resultP_DX=%f.png", dx);
-		saveFoto(endsol, resultadofoto, dx, dx);
-		fclose(resultado);
-
+      
     }
 	return 0;
 

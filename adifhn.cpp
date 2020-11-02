@@ -46,17 +46,32 @@ Matrix* initU()
 		{
 			u->operator()(i, j, 0.0);
 
-			int r = (L * 0.2) / dx, c = (tam / 2);
+			int r = (L * 0.1) / dx, c = (tam / 2);
 
 			if (((i - c) * (i - c) + (j - c) * (j - c)) < r * r)
 			{
-				u->operator()(i, j, 1);
+				u->operator()(i, j, 0);
 			}
 		}
 	}
 	return u;
 }
+double Iapp(int x,int y,int k) {
+	int r = (L * 0.1) / dx, c = (tam / 2);
 
+	if(k==10)
+	if (x>1 && x<4)
+	{
+		return 1;
+	}
+
+	if (k == 100)
+		if (x > 1 && x < 4 && y<70)
+		{
+			return 1;
+		}
+	return 0;
+}
 bool areDone(bool* flag, int t) {
 	for (int i = 0; i < t; i++)
 		if (flag[i])
@@ -127,7 +142,7 @@ double R(double U, double G) {
 	return  dt * ((U * (1 - U) * (U - a) - G) / (2*e));
 }
 Matrix* Uaprox;
-double* getVetorFx(int x)
+double* getVetorFx(int x,int k)
 {
 	double* Fx;
 	Fx = (double*)malloc(sizeof(double) * tam);
@@ -144,7 +159,7 @@ double* getVetorFx(int x)
 			Ru=R(Uaprox->operator()(x,y),G);
 		}
 		else
-		Ru = R(U,G);
+				Ru = R(U, G);
 
 		if (x != 0 && x != tam - 1)
 			Fx[y] = U * (1 - 2 * Y) + Y * UXP1 + Y * UXM1 + Ru;
@@ -178,7 +193,8 @@ double* solve_tridiagonal(double x[], const size_t N, const double a[], const  d
 	delete[] cprime;
 	return x;
 }
-void calc(int beg, int tam, double** rhs) {
+void calc(int beg, int tam, double** rhs, int* k) {
+	int n = *k;
 	while (flagCalkill[beg] == false) {
 		cs.notify_one();
 		std::unique_lock<std::mutex> lock(mutex); 
@@ -192,12 +208,13 @@ void calc(int beg, int tam, double** rhs) {
 	   //Step
 		for (int i = beg; i < tam; i += NT)
 		{
-			double* Fx = getVetorFx(i);
+			double* Fx = getVetorFx(i,n);
 			Fx = solve_tridiagonal(Fx, tam, rhs[1], rhs[0], rhs[2]);
 
 			for (int j = 0; j < tam; j++)
 			{	
-
+				if (!ua->isFliped())
+					Fx[j]+= Iapp(i, j, *k);
 				u->operator()(i, j, Fx[j]);
 				g->operator()(i, j, g->operator()(i, j) + dt * 0.5 * (u->operator()(i, j) - (g->operator()(i, j) * y)));
 			}
@@ -235,11 +252,11 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 	char* filename = c;
 	arquivo = fopen(filename, "w");
 	dx = dxP, dy = dxP;
-	L =  1.1;
+	L =  10;
 	tam = L / dx;
 	G = 25,	X = 100;
 	dt = dtP;
-	Segundos = 3;
+	Segundos = 6;
 	k = Segundos / dt;
 	Y = (G / X) * ((dt) / (2  * dx * dx));
 	Cm = 0.0,y = 0.5, a = 0.1, e = 0.005;
@@ -252,6 +269,7 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 	flagCalkill = (bool*)malloc(sizeof(bool) * NT);
 	//-------------------Inicialização de variaveis
 
+	int n;
 
 	//Inicialização de Threds
 	std::thread threadsCalc[NT];
@@ -259,13 +277,12 @@ void adifhn(double dtP, double dxP, double dtAlvo, char c[], bool printB,bool pr
 	{
 		flagCal[i] = false;
 		flagCalkill[i] = false;
-		threadsCalc[i] = std::thread(calc, i, tam, rhs); //Cada thread executa o passo para algumas linhas especeficas da matrix
+		threadsCalc[i] = std::thread(calc, i, tam, rhs,&n); //Cada thread executa o passo para algumas linhas especeficas da matrix
 	}
 	report = printB;
 	std::thread printer = std::thread(print, k, dtAlvo); //Thread para mostrar o progesso
 	//----------------Inicialização de Threds
 
-	int n;
 	for (n = 0; n < k; n++)
 	{
 		npar = n;
