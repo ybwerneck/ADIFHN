@@ -1,0 +1,5 @@
+set yrange[0:1]
+set xrange[0:10]
+plot "I.txt" u 1 with line title "Infecatdos",\
+ "S.txt" u 1 with lines title "Sucetiveis",\
+"R.txt" u 1 with lines title"Recuperado"

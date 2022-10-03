@@ -1,0 +1,11 @@
+
+set palette defined ( -0.4 "#0000FF", 0 "#FFFFFF", 1 "#00FF0F" ) 
+ set cbrange[-0.4:1]
+ stats "I.txt"
+  do for [i=0:STATS_blocks-1] {   
+  unset label
+ set pm3d map
+	splot "I.txt" matrix index i palette with image,
+}
+ 
+  

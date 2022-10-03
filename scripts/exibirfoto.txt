@@ -1,0 +1,15 @@
+set palette defined ( -0.4 "#0000FF", 0 "#FFFFFF", 1 "#00FF0F" ) 
+ set cbrange[-0.4:1]
+ stats sprintf("%s",end) u 2:3
+ set xr [STATS_min_x:STATS_max_x] 
+ set yr [STATS_min_y:STATS_max_y] 
+
+ set label front sprintf("T= %f",(i*dt)) at graph 0.1, graph 0.1 font ",10" 
+set label front sprintf("ADI dt= %f dx=%f",dt,dx) at graph 0.1, graph 0.9 font ",15" 
+set size square 1,1
+set view map
+splot sprintf("%s",end) matrix palette with image
+
+
+ 
+      
